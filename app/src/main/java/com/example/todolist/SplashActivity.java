@@ -11,8 +11,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //setTheme(R.style.AppTheme);
-
         setContentView(R.layout.activity_splash);
         getSupportActionBar().hide();
         final Intent i = new Intent(SplashActivity.this, MainActivity.class);

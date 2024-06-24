@@ -16,12 +16,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String NAME = "toDoListDatabase";
     private static final String TODO_TABLE = "todo";
     private static final String ID = "id";
-    private static final String TASK = "task";
+    private static final String TITLE = "title";
+    private static final String DESCRIPTION = "description";
     private static final String STATUS = "status";
-    /*private static final String CREATE_TODO_TABLE = "CREATE TABLE " + TODO_TABLE + "(" + ID +
-            " INTEGER PRIMARY KEY AUTOINCREMENT, " + TASK + " TEXT, " + STATUS + " INTEGER)";*/
 
-    private static final String CREATE_TODO_TABLE = "CREATE TABLE " + TODO_TABLE + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TASK + " TEXT, "
+    private static final String CREATE_TODO_TABLE = "CREATE TABLE " + TODO_TABLE + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TITLE + " TEXT, " + DESCRIPTION + " TEXT, "
             + STATUS + " INTEGER)";
 
     private SQLiteDatabase db;
@@ -46,7 +45,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void insertTask(ToDoModel task) {
         ContentValues cv = new ContentValues();
-        cv.put(TASK, task.getTask());
+        cv.put(TITLE, task.getTitle());
+        cv.put(DESCRIPTION, task.getDescription());
         cv.put(STATUS, 0);
         db.insert(TODO_TABLE, null, cv);
     }
@@ -63,11 +63,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         ToDoModel task = new ToDoModel();
 
                         int idColumnIndex = cur.getColumnIndex(ID);
-                        int taskColumnIndex = cur.getColumnIndex(TASK);
+                        int titleColumnIndex = cur.getColumnIndex(TITLE);
+                        int descriptionColumnIndex = cur.getColumnIndex(DESCRIPTION);
                         int statusColumnIndex = cur.getColumnIndex(STATUS);
-                        if (idColumnIndex != -1 && taskColumnIndex != -1 && statusColumnIndex != -1) {
+                        if (idColumnIndex != -1 && titleColumnIndex != -1 && statusColumnIndex != -1) {
                             task.setId(cur.getInt(idColumnIndex));
-                            task.setTask(cur.getString(taskColumnIndex));
+                            task.setTitle(cur.getString(titleColumnIndex));
+                            task.setDescription(cur.getString(descriptionColumnIndex));
                             task.setStatus(cur.getInt(statusColumnIndex));
                             taskList.add(task);
                         }
@@ -90,9 +92,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.update(TODO_TABLE, cv, ID+"=?", new String[] {String.valueOf(id)});
     }
 
-    public void updateTask(int id, String task) {
+    public void updateTitle(int id, String title) {
         ContentValues cv = new ContentValues();
-        cv.put(TASK, task);
+        cv.put(TITLE, title);
+        db.update(TODO_TABLE, cv, ID+"=?", new String[] {String.valueOf(id)});
+    }
+
+    public void updateDescription(int id, String description) {
+        ContentValues cv = new ContentValues();
+        cv.put(DESCRIPTION, description);
         db.update(TODO_TABLE, cv, ID+"=?", new String[] {String.valueOf(id)});
     }
 

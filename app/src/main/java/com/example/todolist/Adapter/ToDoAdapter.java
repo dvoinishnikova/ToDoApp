@@ -2,12 +2,16 @@ package com.example.todolist.Adapter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todolist.AddNewTask;
@@ -34,22 +38,28 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
         return new ViewHolder(itemView);
     }
 
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         db.openDatabase();
         ToDoModel item = todoList.get(position);
-        holder.task.setText(item.getTask());
+
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(item.getTitle() + "\n" + item.getDescription());
+        sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, item.getTitle().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        holder.task.setText(sb);
         holder.task.setChecked(toBoolean(item.getStatus()));
+
+
         holder.task.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    db.updateStatus(item.getId(), 1);
-                } else {
-                    db.updateStatus(item.getId(), 0);
-                }
+
+                int status = isChecked ? 1 : 0;
+                db.updateStatus(item.getId(), status);
             }
         });
-
     }
 
     public int getItemCount() {
@@ -83,7 +93,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
         ToDoModel item = todoList.get(position);
         Bundle bundle = new Bundle();
         bundle.putInt("id", item.getId());
-        bundle.putString("task", item.getTask());
+        bundle.putString("title", item.getTitle());
+        bundle.putString("description", item.getDescription());
         AddNewTask fragment = new AddNewTask();
         fragment.setArguments(bundle);
         fragment.show(activity.getSupportFragmentManager(), AddNewTask.TAG);
